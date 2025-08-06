@@ -437,6 +437,11 @@
             <!-- Header principal -->
             <div class="header">
                 <button class="logout-btn" onclick="logout()">Déconnexion</button>
+                <div class="week-nav" style="position: absolute; top: 15px; left: 20px;">
+                    <a href="week1.html" style="color: #F2EDE4; text-decoration: none; margin-right: 15px; font-size: 12px; border-bottom: 2px solid #F2EDE4;">Semaine 1</a>
+                    <a href="week2.html" style="color: rgba(242, 237, 228, 0.7); text-decoration: none; margin-right: 15px; font-size: 12px;">Semaine 2</a>
+                    <a href="week3.html" style="color: rgba(242, 237, 228, 0.7); text-decoration: none; font-size: 12px;">Semaine 3</a>
+                </div>
                 <h3>Sagesse, une étude biblique de l'épître de Jacques</h3>
                 <h1>Semaine 1 : La foi</h1>
             </div>
@@ -911,7 +916,7 @@
                     <div class="navigation-buttons">
                         <button class="nav-btn" id="prevBtn" onclick="previousDay()">← Précédent</button>
                         <div class="day-indicator">Jour 5 sur 5</div>
-                        <button class="nav-btn" id="nextBtn" onclick="nextDay()" disabled>Terminé ✓</button>
+                        <button class="nav-btn" id="nextWeekBtn" onclick="goToNextWeek()">Semaine 2 →</button>
                     </div>
                 </div>
             </div>
@@ -1052,6 +1057,7 @@
         window.showDay = showDay;
         window.nextDay = nextDay;
         window.previousDay = previousDay;
+        window.goToNextWeek = goToNextWeek;
 
         // Auth State Observer
         onAuthStateChanged(auth, (user) => {
@@ -1268,6 +1274,28 @@
         function previousDay() {
             if (currentDay > 1) {
                 showDay(currentDay - 1);
+            }
+        }
+
+        // Navigation vers la semaine suivante
+        async function goToNextWeek() {
+            if (currentUser) {
+                try {
+                    // Marquer la semaine 1 comme terminée
+                    await updateDoc(doc(db, 'users', currentUser.uid), {
+                        'studyProgress.currentWeek': 2,
+                        'studyProgress.completedWeeks': ['week1']
+                    });
+                    
+                    // Rediriger vers week2
+                    window.location.href = 'week2.html';
+                } catch (error) {
+                    console.error('Erreur lors de la transition:', error);
+                    // Rediriger quand même
+                    window.location.href = 'week2.html';
+                }
+            } else {
+                window.location.href = 'week2.html';
             }
         }
 
