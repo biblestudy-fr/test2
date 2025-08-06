@@ -54,6 +54,107 @@
             background: rgba(242, 237, 228, 0.3);
         }
 
+        /* Menu Burger */
+        .burger-menu {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .burger-icon {
+            width: 25px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .burger-line {
+            width: 100%;
+            height: 2px;
+            background: #F2EDE4;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .burger-menu.active .burger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .burger-menu.active .burger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-menu.active .burger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #5B6F5C;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding: 80px 20px 20px;
+        }
+
+        .nav-overlay.active {
+            left: 0;
+        }
+
+        .nav-overlay h3 {
+            color: #F2EDE4;
+            margin-bottom: 30px;
+            font-size: 18px;
+            text-align: center;
+            border-bottom: 1px solid rgba(242, 237, 228, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .nav-overlay a {
+            display: block;
+            color: #F2EDE4;
+            text-decoration: none;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: 1px solid transparent;
+        }
+
+        .nav-overlay a:hover {
+            background: rgba(242, 237, 228, 0.1);
+            border-color: rgba(242, 237, 228, 0.2);
+        }
+
+        .nav-overlay a.current {
+            background: rgba(242, 237, 228, 0.2);
+            border-color: #F2EDE4;
+            font-weight: 500;
+        }
+
+        .nav-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .nav-backdrop.active {
+            display: block;
+        }
+
         .content {
             padding: 20px;
         }
@@ -436,14 +537,32 @@
         <div class="container">
             <!-- Header principal -->
             <div class="header">
-                <button class="logout-btn" onclick="logout()">Déconnexion</button>
-                <div class="week-nav" style="position: absolute; top: 15px; left: 20px;">
-                    <a href="week1.html" style="color: #F2EDE4; text-decoration: none; margin-right: 15px; font-size: 12px; border-bottom: 2px solid #F2EDE4;">Semaine 1</a>
-                    <a href="week2.html" style="color: rgba(242, 237, 228, 0.7); text-decoration: none; margin-right: 15px; font-size: 12px;">Semaine 2</a>
-                    <a href="week3.html" style="color: rgba(242, 237, 228, 0.7); text-decoration: none; font-size: 12px;">Semaine 3</a>
+                <!-- Menu Burger -->
+                <div class="burger-menu" onclick="toggleNav()">
+                    <div class="burger-icon">
+                        <div class="burger-line"></div>
+                        <div class="burger-line"></div>
+                        <div class="burger-line"></div>
+                    </div>
                 </div>
+
+                <button class="logout-btn" onclick="logout()">Déconnexion</button>
                 <h3>Sagesse, une étude biblique de l'épître de Jacques</h3>
                 <h1>Semaine 1 : La foi</h1>
+            </div>
+
+            <!-- Navigation Overlay -->
+            <div class="nav-backdrop" onclick="closeNav()"></div>
+            <div class="nav-overlay">
+                <h3>📖 Navigation</h3>
+                <a href="week1.html" class="current">Semaine 1 - La Foi</a>
+                <a href="week2.html">Semaine 2 - [Titre]</a>
+                <a href="week3.html">Semaine 3 - [Titre]</a>
+                <a href="week4.html">Semaine 4 - [Titre]</a>
+                <a href="week5.html">Semaine 5 - [Titre]</a>
+                <a href="week6.html">Semaine 6 - [Titre]</a>
+                <a href="week7.html">Semaine 7 - [Titre]</a>
+                <a href="week8.html">Semaine 8 - [Titre]</a>
             </div>
 
             <div class="content">
@@ -1058,6 +1177,8 @@
         window.nextDay = nextDay;
         window.previousDay = previousDay;
         window.goToNextWeek = goToNextWeek;
+        window.toggleNav = toggleNav;
+        window.closeNav = closeNav;
 
         // Auth State Observer
         onAuthStateChanged(auth, (user) => {
@@ -1297,6 +1418,35 @@
             } else {
                 window.location.href = 'week2.html';
             }
+        }
+
+        // Navigation menu functions
+        function toggleNav() {
+            const burgerMenu = document.querySelector('.burger-menu');
+            const navOverlay = document.querySelector('.nav-overlay');
+            const navBackdrop = document.querySelector('.nav-backdrop');
+            
+            burgerMenu.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+            navBackdrop.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            if (navOverlay.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeNav() {
+            const burgerMenu = document.querySelector('.burger-menu');
+            const navOverlay = document.querySelector('.nav-overlay');
+            const navBackdrop = document.querySelector('.nav-backdrop');
+            
+            burgerMenu.classList.remove('active');
+            navOverlay.classList.remove('active');
+            navBackdrop.classList.remove('active');
+            document.body.style.overflow = '';
         }
 
         // Fonction de sauvegarde Firebase avec fallback localStorage
